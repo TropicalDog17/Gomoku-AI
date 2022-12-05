@@ -4,7 +4,7 @@ import piece
 
 def evaluation_state(state, current_color):
     return evaluate_color(state, piece.BLACK, current_color) + \
-        evaluate_color(state, piece.WHITE, current_color)
+           evaluate_color(state, piece.WHITE, current_color)
 
 
 def evaluate_color(state, color, current_color):
@@ -66,13 +66,55 @@ def evaluate_line(line, color, current):
 
 
 def calc(consec, block_count, is_current, has_empty_space=False):
+    WIN_GUARANTEE = 10000
+    evaluation = 0
     if block_count == 2 and consec < 5:
         return 0
 
     if consec >= 5:
         if has_empty_space:
-            return 8000
-        return 100000
+            evaluation = 8000
+        else:
+            evaluation = 10000
+    if consec == 4:
+        if is_current:
+            if block_count == 0:
+                evaluation = 10000
+            else:
+                evaluation = 5000
+        else:
+            # 4 consecutive stones + user to move -> guarantee win!
+            if block_count == 0:
+                evaluation = 1500
+            else:
+                # 4 consecutive stones + 1 block means opponent need to spend a move blocking, so high score
+                evaluation = 250
+
+    if consec == 3:
+        if block_count == 0:
+            if is_current:
+                # 3 consecutive stones + 0 block mean current player will win in next 2 moves,
+                # But opponents can also win in 2 moves, so not guarantee win
+                evaluation = 1000
+            else:
+                # Opponent needs to block to prevent losing
+                evaluation = 200
+        else:
+            if is_current:
+                evaluation = 10
+            else:
+                evaluation = 2
+    if consec == 2:
+        if block_count == 0:
+            if is_current:
+                evaluation = 2
+            else:
+                evaluation = 2
+        else:
+            evaluation = 1
+    if consec > 5:
+        evaluation = WIN_GUARANTEE * 2
+    return evaluation
 
     consec_score = (2, 5, 1000, 10000)
     # 3: 0.05

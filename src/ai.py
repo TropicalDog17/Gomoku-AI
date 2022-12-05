@@ -30,6 +30,8 @@ def get_best_move(state, depth, is_max_state):
             best_move = move
             # print(best_move, best_value)
 
+
+    # In case not able to find any candidate move
     if best_move[0] == -1 and best_move[1] == -1:
         return top_moves[0]
 
@@ -75,6 +77,11 @@ def minimax(state, alpha, beta, depth, is_max_state):
 
 
 def first_move(state):
+    """
+
+    :param state:
+    :return: An initial move placed in the center
+    """
     x = state.size // 2
     return np.random.choice((x - 1, x, x + 1), 2), 1
 
