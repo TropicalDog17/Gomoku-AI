@@ -69,21 +69,21 @@ def calc(consec, block_count, is_current, has_empty_space=False):
     WIN_GUARANTEE = 10000
     evaluation = 0
     if block_count == 2 and consec < 5:
-        evaluation = 0
-
-    if consec >= 5:
-        if has_empty_space:
-            evaluation = 8000
-        evaluation = WIN_GUARANTEE
+        return evaluation
+    if consec == 5:
+        return WIN_GUARANTEE
     if consec == 4:
+        # 4 consecutive stones + player to move -> guarantee win!
         if is_current:
             evaluation = WIN_GUARANTEE
         else:
-            # 4 consecutive stones + user to move -> guarantee win!
+            # 4 consecutive stones + no_block -> guarantee win in the next move
+            # But opponents can also win in the next move, so not 100% guarantee win!
             if block_count == 0:
-                evaluation = WIN_GUARANTEE/4
+                evaluation = WIN_GUARANTEE / 4
             else:
-                # 4 consecutive stones + 1 block means opponent need to spend a move blocking, so high score
+                # 4 consecutive stones + 1 block means opponent need to spend a move blocking
+                # So high evaluation score
                 evaluation = 300
 
     if consec == 3:
@@ -91,10 +91,10 @@ def calc(consec, block_count, is_current, has_empty_space=False):
             if is_current:
                 # 3 consecutive stones + 0 block mean current player will win in next 2 moves,
                 # But opponents can also win in 2 moves, so not guarantee win
-                evaluation = 1000
+                return 1000
             else:
                 # Opponent needs to block to prevent losing
-                evaluation = 10
+                return 100
         else:
             if is_current:
                 evaluation = 10
@@ -102,30 +102,29 @@ def calc(consec, block_count, is_current, has_empty_space=False):
                 evaluation = 2
     if consec == 2:
         if block_count == 0:
-            if is_current:
-                evaluation = 5
-            else:
-                evaluation = 5
+            evaluation = 5
         else:
             evaluation = 3
     if consec == 1:
-        evaluation = 1
+        return 1
+
+    # Overline -> Surely win
     if consec > 5:
-        evaluation = WIN_GUARANTEE * 2
+        return WIN_GUARANTEE * 2
     return evaluation
 
-    consec_score = (2, 5, 1000, 10000)
-    # 3: 0.05
-    block_count_score = (0.5, 0.6, 0.01, 0.25)
-    not_current_score = (1, 1, 0.2, 0.15)
-    empty_space_score = (1, 1.2, 0.9, 0.4)
-
-    consec_idx = consec - 1
-    value = consec_score[consec_idx]
-    if block_count == 1:
-        value *= block_count_score[consec_idx]
-    if not is_current:
-        value *= not_current_score[consec_idx]
-    if has_empty_space:
-        value *= empty_space_score[consec_idx]
-    return int(value)
+    # consec_score = (2, 5, 1000, 10000)
+    # # 3: 0.05
+    # block_count_score = (0.5, 0.6, 0.01, 0.25)
+    # not_current_score = (1, 1, 0.2, 0.15)
+    # empty_space_score = (1, 1.2, 0.9, 0.4)
+    #
+    # consec_idx = consec - 1
+    # value = consec_score[consec_idx]
+    # if block_count == 1:
+    #     value *= block_count_score[consec_idx]
+    # if not is_current:
+    #     value *= not_current_score[consec_idx]
+    # if has_empty_space:
+    #     value *= empty_space_score[consec_idx]
+    # return int(value)
