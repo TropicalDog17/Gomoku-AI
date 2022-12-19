@@ -2,12 +2,12 @@ import numpy as np
 import piece
 
 
-def evaluation_state(state, current_color):
-    return evaluate_color(state, piece.BLACK, current_color) + \
-           evaluate_color(state, piece.WHITE, current_color)
+def get_eval_state(state, current_color):
+    return get_color_evaluation(state, piece.BLACK, current_color) + \
+           get_color_evaluation(state, piece.WHITE, current_color)
 
 
-def evaluate_color(state, color, current_color):
+def get_color_evaluation(state, color, current_color):
     values = state.values
     size = state.size
     current = color == current_color
@@ -69,7 +69,7 @@ def calc(consec, block_count, is_current, has_empty_space=False):
     WIN_GUARANTEE = 10000
     evaluation = 0
     if block_count == 2 and consec < 5:
-        return evaluation
+        return 0
     if consec == 5:
         return WIN_GUARANTEE
     if consec == 4:
@@ -80,7 +80,7 @@ def calc(consec, block_count, is_current, has_empty_space=False):
             # 4 consecutive stones + no_block -> guarantee win in the next move
             # But opponents can also win in the next move, so not 100% guarantee win!
             if block_count == 0:
-                evaluation = WIN_GUARANTEE / 4
+                evaluation = 1500
             else:
                 # 4 consecutive stones + 1 block means opponent need to spend a move blocking
                 # So high evaluation score
@@ -93,8 +93,8 @@ def calc(consec, block_count, is_current, has_empty_space=False):
                 # But opponents can also win in 2 moves, so not guarantee win
                 return 1000
             else:
-                # Opponent needs to block to prevent losing
-                return 100
+                # Opponent needs to block to prevent losing -> fairly high score
+                return 200
         else:
             if is_current:
                 evaluation = 10
@@ -106,7 +106,7 @@ def calc(consec, block_count, is_current, has_empty_space=False):
         else:
             evaluation = 3
     if consec == 1:
-        return 1
+        evaluation = 1
 
     # Overline -> Surely win
     if consec > 5:

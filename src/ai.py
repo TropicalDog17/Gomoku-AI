@@ -1,6 +1,6 @@
 import piece
 import numpy as np
-from eval_fn import evaluation_state
+from eval_fn import get_eval_state
 
 
 def get_best_move(state, depth, is_max_state):
@@ -42,19 +42,19 @@ def get_top_moves(state, n, is_max_state):
     color = state.color
     top_moves = []
 
-    for move in state.legal_moves():
-        evaluation = evaluation_state(state.next(move), color)
+    for move in state.possible_moves():
+        evaluation = get_eval_state(state.next(move), color)
         top_moves.append((move, evaluation))
     return sorted(top_moves, key=lambda x: x[1], reverse=is_max_state)[:n]
 
 
 def minimax(state, alpha, beta, depth, is_max_state):
     if depth == 0 or state.is_terminal():
-        return evaluation_state(state, -state.color)
+        return get_eval_state(state, -state.color)
 
     if is_max_state:
         value = -9999
-        for move in state.legal_moves():
+        for move in state.possible_moves():
             value = max(
                 value,
                 minimax(state.next(move), alpha, beta, depth - 1, False)
@@ -65,7 +65,7 @@ def minimax(state, alpha, beta, depth, is_max_state):
         return value
     else:
         value = 9999
-        for move in state.legal_moves():
+        for move in state.possible_moves():
             value = min(
                 value,
                 minimax(state.next(move), alpha, beta, depth - 1, True)
