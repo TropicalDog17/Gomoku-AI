@@ -113,18 +113,3 @@ def calc(consec, block_count, is_current, has_empty_space=False):
         return WIN_GUARANTEE * 2
     return evaluation
 
-    # consec_score = (2, 5, 1000, 10000)
-    # # 3: 0.05
-    # block_count_score = (0.5, 0.6, 0.01, 0.25)
-    # not_current_score = (1, 1, 0.2, 0.15)
-    # empty_space_score = (1, 1.2, 0.9, 0.4)
-    #
-    # consec_idx = consec - 1
-    # value = consec_score[consec_idx]
-    # if block_count == 1:
-    #     value *= block_count_score[consec_idx]
-    # if not is_current:
-    #     value *= not_current_score[consec_idx]
-    # if has_empty_space:
-    #     value *= empty_space_score[consec_idx]
-    # return int(value)
