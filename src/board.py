@@ -1,9 +1,10 @@
 import numpy as np
 import piece
+import string
 
 
 class BoardState:
-    def __init__(self, size, values=None, evals=None, color=piece.WHITE):
+    def __init__(self, size=19, values=None, evals=None, color=piece.BLACK):
         if np.all(values != None):
             self.values = np.copy(values)
         else:
@@ -18,10 +19,15 @@ class BoardState:
         return self.values[position]
 
     def is_valid_position(self, position):
-        return (is_valid_position(self.size, position)
+        return (is_inside_board(self.size, position)
                 and self.values[position] == piece.EMPTY)
 
-    def legal_moves(self):
+    def possible_moves(self):
+
+        """
+        The AI is restricted to play only at cells that are adjacent to occupied cells
+        :return: a
+        """
         prev_move_idxs = self.values != piece.EMPTY
         area_idxs = expand_area(self.size, prev_move_idxs)
         return np.column_stack(np.where(area_idxs == True))
@@ -43,6 +49,8 @@ class BoardState:
 
     def check_five_in_a_row(self):
         pattern = np.full((5,), 1)
+        five_black_in_a_row = np.full((5,), 1) * piece.BLACK
+        five_white_in_a_row = np.full((5,), 1) * piece.WHITE
 
         black_win = self.check_pattern(pattern * piece.BLACK)
         white_win = self.check_pattern(pattern * piece.WHITE)
@@ -60,12 +68,16 @@ class BoardState:
 
     def check_pattern(self, pattern):
         count = 0
-        for line in self.get_lines():
+        for line in self.get_all_lines():
             if issub(line, pattern):
                 count += 1
         return count
 
-    def get_lines(self):
+    def get_all_lines(self):
+        """
+        Get all possible lines in the board for evaluation purpose
+        :return: a list of all valid rows, columns and diagonal(length >= 5)
+        """
         l = []
 
         # rows and cols
@@ -90,14 +102,20 @@ class BoardState:
         self.values[i, j] = value
 
     def __str__(self):
-        out = ' ' * 3
-        out += '{}\n'.format(''.join(
-            '{}{}'.format((i + 1) % 10, i < 10 and ' ' or "'")
-            for i in range(self.size)
-        ))
+        alphabet = list(string.ascii_uppercase)
+        out = ' ' * 2
 
+        # row
         for i in range(self.size):
-            out += '{}{} '.format(i + 1 < 10 and ' ' or '', i + 1)
+            out += f'{alphabet[i]} '
+        # out += '{}\n'.format(''.join(
+        #     '{}{}'.format((i + 1) % 10, i < 10 and ' ' or "'")
+        #     for i in range(self.size)
+        # ))
+        out += '\n'
+        for i in range(self.size):
+            out += f'{alphabet[i]} '
+            # out += '{}{} '.format(i + 1 < 10 and ' ' or '', i + 1)
             for j in range(self.size):
                 out += piece.symbols[self[i, j]]
                 if self.last_move and (i, j) == tuple(self.last_move):
@@ -124,23 +142,28 @@ def issub(l, subl):
     return False
 
 
-def expand_area(size, idxs):
-    area_idxs = np.copy(idxs)
+def expand_area(size, occupied_idxs):
+    """
+    :param: size: size of the board
+    :param: occupied_idxs: a 2D board of boolean value indicating occupied cells in the board
+    :return: a 2D board of boolean value indicating cells that are adjacent to each occupied cell.
+    """
+    area_idxs = np.copy(occupied_idxs)
     for i in range(size):
         for j in range(size):
-            if not idxs[i, j]:
+            if not occupied_idxs[i, j]:
                 continue
             for direction in ((1, 0), (0, 1), (1, 1), (1, -1)):
                 di, dj = direction
                 for side in (1, -1):
                     ni = i + di * side
                     nj = j + dj * side
-                    if not is_valid_position(size, (ni, nj)):
+                    if not is_inside_board(size, (ni, nj)):
                         continue
                     area_idxs[ni, nj] = True
-    return np.bitwise_xor(area_idxs, idxs)
+    return np.bitwise_xor(area_idxs, occupied_idxs)
 
 
-def is_valid_position(board_size, position):
+def is_inside_board(board_size, position):
     i, j = position
-    return i >= 0 and i < board_size and j >= 0 and j < board_size
+    return 0 <= i < board_size and 0 <= j < board_size

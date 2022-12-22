@@ -5,15 +5,15 @@ from ai import get_best_move
 
 
 class GameRunner:
-    def __init__(self, size=19, depth=2):
+    def __init__(self, color=piece.BLACK, size=19, depth=2):
         self.size = size
         self.depth = depth
         self.finished = False
-        self.restart()
+        self.restart(color=color)
 
-    def restart(self, player_index=-1):
+    def restart(self, color, player_index=-1):
         self.is_max_state = True if player_index == -1 else False
-        self.state = BoardState(self.size)
+        self.state = BoardState(self.size, color=color)
         self.ai_color = -player_index
 
     def play(self, i, j):
