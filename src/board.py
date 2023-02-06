@@ -1,7 +1,11 @@
 import numpy as np
+import rich
+
 import piece
 import string
-
+from rich.console import Console
+from rich.table import Table
+from rich.align import Align
 
 class BoardState:
     def __init__(self, size=19, values=None, evals=None, color=piece.BLACK):
@@ -101,32 +105,23 @@ class BoardState:
         i, j = position
         self.values[i, j] = value
 
-    def __str__(self):
-        alphabet = list(string.ascii_uppercase)
-        out = ' ' * 2
+    def get_table(self):
+        """
 
-        # row
+        :return:
+        """
+        console = Console()
+        alphabet = list(string.ascii_uppercase)
+        table = Table(show_header=True, header_style="bold magenta", expand=True, style="bold")
+        print(table.padding)
+        table.add_column("")
         for i in range(self.size):
-            out += f'{alphabet[i]} '
-        # out += '{}\n'.format(''.join(
-        #     '{}{}'.format((i + 1) % 10, i < 10 and ' ' or "'")
-        #     for i in range(self.size)
-        # ))
-        out += '\n'
+            table.add_column(alphabet[i])
         for i in range(self.size):
-            out += f'{alphabet[i]} '
-            # out += '{}{} '.format(i + 1 < 10 and ' ' or '', i + 1)
-            for j in range(self.size):
-                out += piece.symbols[self[i, j]]
-                if self.last_move and (i, j) == tuple(self.last_move):
-                    out += '*'
-                else:
-                    out += ' '
-            if i == self.size - 1:
-                out += ''
-            else:
-                out += '\n'
-        return out
+            table.add_row(alphabet[i], *[f'[red]{piece.symbols[self[i,j]]}[/red]' for j in range(self.size)], end_section=True)
+        return Align.center(table, vertical='middle')
+
+
 
     def __repr__(self):
         return self.__str__()

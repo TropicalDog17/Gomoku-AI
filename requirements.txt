@@ -1,2 +1,4 @@
-Flask
-numpy
+Flask~=2.2.2
+numpy~=1.23.5
+
+rich~=13.3.1
