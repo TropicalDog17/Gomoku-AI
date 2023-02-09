@@ -1,6 +1,6 @@
-import piece
+from src import piece
 import numpy as np
-from eval_fn import get_eval_state
+from src.eval_fn import get_eval_state
 
 
 def get_best_move(state, depth, is_max_state):
@@ -29,7 +29,6 @@ def get_best_move(state, depth, is_max_state):
             best_value = value
             best_move = move
             # print(best_move, best_value)
-
 
     # In case not able to find any candidate move
     if best_move[0] == -1 and best_move[1] == -1:

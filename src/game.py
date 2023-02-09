@@ -1,11 +1,11 @@
-import piece
+from src import piece
 import numpy as np
-from board import BoardState
-from ai import get_best_move
+from src.board import BoardState
+from src.ai import get_best_move
 
 
 class GameRunner:
-    def __init__(self, color=piece.BLACK, size=19, depth=2):
+    def __init__(self, depth, color=piece.BLACK, size=19, ):
         self.size = size
         self.depth = depth
         self.finished = False
@@ -37,12 +37,3 @@ class GameRunner:
         # print(time.time() - t)
         return True, move
 
-    def get_status(self):
-        board = self.state.values
-        return {
-            'board': board.tolist(),
-            'next': -self.state.color,
-            'finished': self.finished,
-            'winner': self.state.winner,
-            # 'debug_board': self.state.__str__()
-        }

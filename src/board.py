@@ -1,7 +1,7 @@
 import numpy as np
 import rich
 
-import piece
+from src import piece
 import string
 from rich.console import Console
 from rich.table import Table

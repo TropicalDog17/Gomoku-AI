@@ -1,5 +1,5 @@
 import numpy as np
-import piece
+from src import piece
 
 
 def get_eval_state(state, current_color):
